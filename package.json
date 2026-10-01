@@ -1,0 +1,21 @@
+{
+  "name": "dsh-sandbox-legacy-acl",
+  "version": "0.2.0",
+  "private": true,
+  "description": "DSH 宿主插件：让 0.1.7 的 Windows ACL 沙箱回退到 0.1.5 的授权行为——授权时只写能力 SID 允许 ACE，不降级令牌完整性、不写 Everyone 的 FILE_DELETE_CHILD 拒绝。自包含 vendor = 0.1.7-rc.2 的 dsh-sandbox-windows-acl（补丁 A/B）+ dsh-win32-process + dsh-lazy-require + dsh-subprocess/control + koffi 3.3.1，完整保留 control fd 能力（run_code 的 worker 靠 fd 7）。纯宿主半，零外部依赖。",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": {
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib",
+    "vendor"
+  ],
+  "engines": {
+    "node": ">=20"
+  }
+}
