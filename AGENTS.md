@@ -30,6 +30,10 @@
 
 ## 3. 契约速查（改代码前先记住）
 
+> **跨版本（2026-10-02）**：0.1.7-rc.2 与 0.2.0-rc.2 的接管契约**相同**，同一份 vendor 通用、不做版本分流。
+> 两处改点的锚点位置：`@deepseek-ai/dsh-sandbox-local/lib/index.js:396`（`materializeAclGrant`）与 `:540`（`windowsAclRunnerInvocation()` 读 `this.internals.windowsAclRunnerArgs`）。
+> ⚠️ 别把它与 `this.runnerCommand` 搞混 —— 那是构造函数配置（Linux/bwrap 链用），0.2.0 新增的诊断技能注册判的就是它。
+
 | 主题 | 约定 |
 | --- | --- |
 | 服务名 | `sandbox`（`SandboxProvider extends Service`，构造里 `super(ctx, "sandbox")`，0.1.5 `dsh-sandbox/lib/index.js:198`） |

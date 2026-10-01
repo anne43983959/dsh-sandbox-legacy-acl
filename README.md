@@ -7,6 +7,25 @@
 
 ---
 
+## 0. 版本支持（2026-10-02 实测判定）
+
+| DSH | 可用性 | 依据 |
+| --- | --- | --- |
+| `0.1.5-rc.3` | ✅ **不需要**本插件 | 0.1.5 原生就是「只写能力 ACE」档 |
+| `0.1.7-rc.2` | ✅ **实测在用** | vendor = 0.1.7-rc.2 整包 + 补丁 A/B；两处改点均已生效 |
+| `0.2.0-rc.2` | ✅ **同一份 vendor 通用，不做版本分流** | 见下 |
+
+**为什么 0.2.0 可以直接用同一份 vendor**（静态判据，2026-10-02 核对）：
+
+1. 本插件的接管方式是**进程内两处改点**，**不替换 npm 包解析**（vendor 经 `import(pathToFileURL(...))` 动态加载）；
+2. 两个锚点在两代**原样存在**：`materializeAclGrant` 2/2、`internals.windowsAclRunnerArgs` 1/1、`internals` 13/13；
+3. 被替换的核心符号计数**逐项一致**：`AclSandbox` 17/17、`AclWriteGrant` 6/6、`grantWrite` 9/9、`restrictTokenIntegrity` 2/2、`workspaceWriteSid` 4/4；`runner.js` 两代 189 行**逐字相同**（只差 import 别名）；
+4. 0.2.0 的 `dsh-sandbox-windows-acl` 真正的增量是**诊断技能**（`ACL_DIAGNOSIS_SKILL` + `registerAclDiagnosisSkill`），与其三件套写入逻辑无关。
+
+> **0.2.0 上的一个已知共存现象**：0.2.0 的 provider 在 `process.platform === "win32" && this.runnerCommand === void 0` 时注册 `diagnose-windows-sandbox-acl` 技能。
+> 本插件改的是 `internals.windowsAclRunnerArgs`（**另一个字段**），故该技能**仍会注册**；沙箱退档后它没有三件套可诊断，属**无害空转**。
+
+---
 ## 1. 为什么存在
 
 DSH 在 Windows 上用「受限令牌 + ACL」实现沙箱。从 **0.1.7-alpha.1** 起，每次对工作区根授权时会一次性写入三条 Windows 安全设置（以下简称**三件套**）：
